@@ -27,6 +27,23 @@ npm run dev
 
 프로덕션 빌드: `npm run build && npm start`
 
+> 로컬은 별도 설정 없이 `data/db.json`에 저장됩니다.
+
+---
+
+## 배포 (Vercel + Neon + Claude API)
+
+→ **[DEPLOY.md](DEPLOY.md)** 에 단계별 가이드가 있어요. 요약:
+
+1. GitHub에 푸시 (로컬 git 저장소·첫 커밋은 준비됨)
+2. Vercel에서 그 저장소 Import → Deploy
+3. Vercel **Storage → Neon Postgres** 생성·연결 → `DATABASE_URL` 자동 주입 (테이블 자동 생성)
+4. **Settings → Environment Variables** 에 `ANTHROPIC_API_KEY` 추가
+5. Redeploy
+
+**스토리지는 자동 전환**됩니다 — `DATABASE_URL`이 있으면 Postgres, 없으면 로컬 파일.
+코드를 바꿀 필요가 없어요 (`lib/store.ts` 디스패처).
+
 ---
 
 ## 무엇을 만들었나 (What was built)
@@ -44,8 +61,9 @@ npm run dev
 
 ## 스키마 요약 (Schema)
 
-로컬 JSON 파일 스토어(`data/db.json`) — DB 설치 없이 즉시 실행. 함수 surface는
-Postgres/Supabase로 그대로 교체 가능 (`lib/store.ts`만 바꾸면 됨).
+**듀얼 스토어** — `DATABASE_URL`이 있으면 Postgres(`lib/store-pg.ts`), 없으면
+로컬 JSON 파일(`lib/store-file.ts`). `lib/store.ts`가 자동 선택. Postgres는
+`sessions`/`events` 두 테이블에 세션 전체를 `jsonb`로 저장하며 첫 요청 때 자동 생성.
 
 - **DiagnosticSession** — id, name?, email?, locale, status, startedAt, completedAt,
   completionTimeSeconds, predictedUserType, topRecommendedDirection, answers{}, recommendation, report, device
