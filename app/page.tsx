@@ -1,6 +1,8 @@
 import Link from "next/link";
 import TrackView from "./components/TrackView";
 import { LogoMark, Wordmark } from "./components/Logo";
+import AppMenu from "./components/AppMenu";
+import ReturningBanner from "./components/ReturningBanner";
 
 const painPoints = [
   "나는 도대체 무슨 일로 다시 돈을 벌 수 있지?",
@@ -58,17 +60,23 @@ export default function LandingPage() {
       {/* ── Nav ─────────────────────────────────────────── */}
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <Wordmark />
-        <Link
-          href="/start"
-          className="hidden rounded-full border border-line bg-surface/70 px-5 py-2 text-sm font-medium text-ink-soft transition hover:border-clay hover:text-clay sm:inline-block"
-        >
-          진단 시작하기
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/start"
+            className="hidden rounded-full border border-line bg-surface/70 px-5 py-2 text-sm font-medium text-ink-soft transition hover:border-clay hover:text-clay sm:inline-block"
+          >
+            진단 시작하기
+          </Link>
+          <AppMenu />
+        </div>
       </header>
 
       {/* ── Hero ────────────────────────────────────────── */}
       <section className="bg-warm-glow relative">
         <div className="mx-auto max-w-3xl px-6 pb-20 pt-12 text-center sm:pt-20">
+          <div className="flex flex-col items-center">
+            <ReturningBanner />
+          </div>
           <p className="animate-fade-up mb-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface/80 px-4 py-1.5 text-sm text-ink-soft shadow-sm backdrop-blur">
             <span className="h-1.5 w-1.5 rounded-full bg-sage" />
             미국 한인 이민자 엄마를 위한 AI 진단

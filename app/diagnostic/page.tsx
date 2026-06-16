@@ -10,6 +10,7 @@ import {
   type Question,
 } from "@/lib/questions";
 import { track } from "@/lib/track";
+import { saveLocalSession } from "@/lib/session-client";
 
 export default function DiagnosticPage() {
   return (
@@ -120,6 +121,9 @@ function DiagnosticFlow() {
         body: JSON.stringify({ sessionId: sid, name, answers }),
       });
       if (!res.ok) throw new Error("complete failed");
+      // Remember this session in the browser so a returning user can
+      // jump straight back to her result and daily log via the menu.
+      saveLocalSession(sid, name || undefined);
       // Let the calming animation breathe for a moment.
       await new Promise((r) => setTimeout(r, 2600));
       router.push(`/result/${sid}`);

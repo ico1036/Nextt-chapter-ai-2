@@ -4,6 +4,7 @@ import { Suspense, use, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Wordmark } from "../../../components/Logo";
+import AppMenu from "../../../components/AppMenu";
 import { NOTE_STEPS, MOOD_OPTIONS } from "@/lib/note";
 import { track } from "@/lib/track";
 import type { MoodTag, NoteReflection } from "@/lib/types";
@@ -301,10 +302,11 @@ function Shell({
 }) {
   return (
     <main className="bg-cream flex min-h-dvh flex-col">
-      <header className="mx-auto w-full max-w-2xl px-6 py-5">
+      <header className="mx-auto flex w-full max-w-2xl items-center justify-between px-6 py-5">
         <Link href={`/next/${sessionId}`}>
           <Wordmark />
         </Link>
+        <AppMenu sessionId={sessionId} />
       </header>
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col px-6 pb-10">
         {children}

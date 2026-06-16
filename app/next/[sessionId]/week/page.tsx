@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { Wordmark } from "../../../components/Logo";
+import AppMenu from "../../../components/AppMenu";
 import { track } from "@/lib/track";
 import type { WeeklyReflection } from "@/lib/types";
 
@@ -35,12 +36,7 @@ export default function WeekPage({
           <Link href="/">
             <Wordmark />
           </Link>
-          <Link
-            href={`/next/${sessionId}`}
-            className="text-sm text-ink-soft transition hover:text-clay"
-          >
-            내 기록
-          </Link>
+          <AppMenu sessionId={sessionId} />
         </header>
         <div className="mx-auto max-w-2xl px-6 pb-8 pt-1">
           <p className="text-sm font-semibold uppercase tracking-wider text-sage">

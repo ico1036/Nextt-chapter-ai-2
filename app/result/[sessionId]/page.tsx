@@ -5,6 +5,7 @@ import { reportToText } from "@/lib/report";
 import { ASSET_LABEL, USER_TYPE_LABEL } from "@/lib/engine";
 import { Wordmark } from "../../components/Logo";
 import TrackView from "../../components/TrackView";
+import AppMenu from "../../components/AppMenu";
 import ResultActions, { FollowUpCTA } from "./ResultActions";
 
 export const dynamic = "force-dynamic";
@@ -46,9 +47,12 @@ export default async function ResultPage({
           <Link href="/">
             <Wordmark />
           </Link>
-          <span className="rounded-full border border-line bg-surface/70 px-3 py-1 text-xs text-ink-soft">
-            {USER_TYPE_LABEL[rec.primaryUserType]}
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="hidden rounded-full border border-line bg-surface/70 px-3 py-1 text-xs text-ink-soft sm:inline-block">
+              {USER_TYPE_LABEL[rec.primaryUserType]}
+            </span>
+            <AppMenu sessionId={sessionId} name={name} />
+          </div>
         </header>
 
         <div className="mx-auto max-w-3xl px-6 pb-12 pt-2 text-center">

@@ -5,6 +5,7 @@ import { deriveTodayAction } from "@/lib/note";
 import { MOOD_OPTIONS } from "@/lib/note";
 import { LogoMark, Wordmark } from "../../components/Logo";
 import TrackView from "../../components/TrackView";
+import AppMenu from "../../components/AppMenu";
 import TodayStep from "./TodayStep";
 import type { DailyNote, MoodTag } from "@/lib/types";
 
@@ -43,12 +44,7 @@ export default async function NoteHome({
           <Link href="/">
             <Wordmark />
           </Link>
-          <Link
-            href={`/result/${sessionId}`}
-            className="text-sm text-ink-soft underline-offset-2 transition hover:text-clay hover:underline"
-          >
-            진단 결과
-          </Link>
+          <AppMenu sessionId={sessionId} name={name ?? undefined} />
         </header>
         <div className="mx-auto max-w-2xl px-6 pb-8 pt-1">
           <p className="text-sm font-semibold uppercase tracking-wider text-clay">
