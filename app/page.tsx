@@ -257,6 +257,64 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── After the report: momentum ──────────────────── */}
+      <section className="bg-cream-2 py-24">
+        <div className="mx-auto max-w-4xl px-6">
+          <div className="grid items-center gap-10 md:grid-cols-2">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wider text-clay">
+                방향을 찾은 다음에도
+              </p>
+              <h2 className="mt-3 font-display text-2xl font-bold leading-snug text-ink sm:text-3xl">
+                혼자 두지 않아요.
+                <br />
+                하루 15분이면 충분해요.
+              </h2>
+              <p className="mt-5 leading-relaxed text-ink-soft">
+                진단이 끝이 아니에요. 오늘의 작은 행동 하나를 정하고, 짧게
+                기록하면 AI가 당신의 흐름을 읽고 다음 걸음을 함께 찾아줘요.
+                크게 하지 않아도 괜찮아요.{" "}
+                <b className="text-ink">멈추지만 않으면 돼요.</b>
+              </p>
+              <ul className="mt-6 space-y-2.5 text-ink">
+                {[
+                  "오늘의 가장 작은 행동 1개",
+                  "2~3분이면 끝나는 짧은 기록",
+                  "AI의 따뜻한 한 줄 피드백",
+                  "한 주를 돌아보는 주간 회고",
+                ].map((t) => (
+                  <li key={t} className="flex items-center gap-2.5">
+                    <span className="text-clay">✓</span>
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-3xl border border-line bg-surface p-6 shadow-soft">
+              <p className="text-xs font-semibold uppercase tracking-wider text-clay">
+                My Next Chapter Note
+              </p>
+              <div className="mt-3 rounded-2xl bg-cream-2 p-4">
+                <p className="text-sm text-ink-soft">오늘의 작은 행동</p>
+                <p className="mt-1 font-medium text-ink">
+                  가장 편한 지인 한 명에게 “요즘 제일 막막한 게 뭐예요?”라고
+                  물어보세요.
+                </p>
+              </div>
+              <div className="mt-3 rounded-2xl bg-sage-tint/60 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-sage">
+                  오늘의 한 줄 피드백
+                </p>
+                <p className="mt-1.5 text-sm leading-relaxed text-ink">
+                  오늘은 막막함을 안고도 한 걸음 나갔어요. 지금은 더 많이 하기보다,
+                  같은 질문을 한 사람에게 더 해보는 게 좋아 보여요.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Final CTA ───────────────────────────────────── */}
       <section className="px-6 pb-24">
         <div className="bg-warm-glow mx-auto max-w-3xl rounded-[2rem] border border-line bg-surface px-8 py-16 text-center shadow-soft">

@@ -236,6 +236,35 @@ export default function AdminPage() {
                       </details>
                     )}
 
+                    {s.notes && s.notes.length > 0 && (
+                      <details className="rounded-xl bg-surface p-3">
+                        <summary className="cursor-pointer font-semibold text-ink-soft">
+                          My Next Chapter Note ({s.notes.length}개)
+                        </summary>
+                        <div className="mt-3 space-y-2 text-ink">
+                          {s.notes.map((n) => (
+                            <div
+                              key={n.id}
+                              className="rounded-lg bg-cream-2 p-2 text-xs"
+                            >
+                              <span className="text-ink-faint">{n.date}</span>
+                              {n.moodTag && (
+                                <span className="ml-2">[{n.moodTag}]</span>
+                              )}
+                              {n.todayAction && <p>· 행동: {n.todayAction}</p>}
+                              {n.customerVoice && <p>· 고객말: {n.customerVoice}</p>}
+                              {n.nextStep && <p>· 내일: {n.nextStep}</p>}
+                              {n.reflection && (
+                                <p className="mt-1 text-ink-soft">
+                                  ↳ {n.reflection.feedback}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    )}
+
                     {s.recommendation && (
                       <details className="rounded-xl bg-surface p-3">
                         <summary className="cursor-pointer font-semibold text-ink-soft">

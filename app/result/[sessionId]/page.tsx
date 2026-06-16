@@ -194,6 +194,27 @@ export default async function ResultPage({
           </p>
         </div>
 
+        {/* 다음 단계 — 오늘의 첫 걸음 (My Next Chapter Note) */}
+        <div className="bg-warm-glow rounded-3xl border border-clay/30 bg-surface px-7 py-9 text-center shadow-soft">
+          <span className="text-3xl">🌅</span>
+          <h2 className="mt-4 font-display text-xl font-bold leading-snug text-ink sm:text-2xl">
+            이 방향으로 오늘의
+            <br />
+            첫 걸음을 시작해볼까요?
+          </h2>
+          <p className="mt-3 leading-relaxed text-ink-soft">
+            크게 하지 않아도 괜찮아요. 오늘은 15분 안에 할 수 있는
+            <br className="hidden sm:block" />
+            작은 행동 하나면 충분해요.
+          </p>
+          <Link
+            href={`/next/${sessionId}`}
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-clay px-7 py-3.5 font-semibold text-white shadow-soft transition hover:bg-clay-deep active:scale-[0.99]"
+          >
+            오늘의 작은 행동 보기 →
+          </Link>
+        </div>
+
         {/* Actions */}
         <div className="space-y-5 border-t border-line pt-10">
           <p className="text-center text-sm font-semibold text-ink-soft">
