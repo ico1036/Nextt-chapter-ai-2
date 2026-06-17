@@ -233,6 +233,75 @@ function buildClosing(a: QuestionResponseMap): string {
   );
 }
 
+// ── "다음으로 해볼 것들" — 공부 · 사람 · 도구 ────────────────
+function whatToLearn(directionId: string, a: QuestionResponseMap): string[] {
+  const map: Record<string, string[]> = {
+    one_on_one_guide: [
+      "사람들이 반복해서 묻는 고민 1가지를 정해, 그걸 푸는 가장 쉬운 설명을 공부해보세요.",
+    ],
+    one_on_one_consulting: [
+      "당신이 조언해줄 주제 1가지의 ‘자주 묻는 질문 5개’를 정리해보세요.",
+      "상담을 구조화하는 간단한 프레임(상황 → 고민 → 다음 한 걸음)을 익혀보세요.",
+    ],
+    small_class: [
+      "가르칠 내용을 ‘딱 3가지 핵심’으로 줄이는 법을 연습해보세요.",
+      "작은 온라인 클래스를 여는 가장 쉬운 방법(줌 + 신청 폼)을 알아보세요.",
+    ],
+    digital_guide: [
+      "당신이 자주 받는 질문을 ‘한 장 가이드’로 정리하는 법을 익혀보세요.",
+    ],
+    ai_beginner_help: [
+      "ChatGPT로 ‘초보자가 가장 자주 막히는 3가지’를 직접 해결해보세요.",
+      "당신 일에 바로 쓸 AI 활용 1가지(글쓰기·정리·이미지)를 깊게 익혀보세요.",
+    ],
+    community_program: [
+      "작은 모임을 운영하는 기본(주제·주기·인원)을 가볍게 공부해보세요.",
+    ],
+    local_life_guide: [
+      "새로 온 사람들이 가장 막히는 정착 절차 1가지를 단계별로 정리해보세요.",
+    ],
+    experience_support: [
+      "당신이 지나온 경험을 ‘남에게 도움 되는 한 가지 조언’으로 정리해보세요.",
+    ],
+  };
+  const out = [...(map[directionId] ?? map.one_on_one_guide)];
+  // AI를 연결하고 싶은 사람이면 AI 학습을 한 줄 더.
+  if (a.current_thought === "connect_ai" && directionId !== "ai_beginner_help") {
+    out.push("당신 방향에 AI를 한 가지만 붙여보세요. 예: ChatGPT로 초안 만들기.");
+  }
+  return out.slice(0, 2);
+}
+
+function peopleToReach(directionId: string, a: QuestionResponseMap): string[] {
+  const out = [
+    "비슷한 일을 먼저 해본 사람 1명에게 ‘어떻게 시작하셨어요?’ 하고 커피챗을 청해보세요.",
+    "관련 커뮤니티·단체 1곳을 찾아 가볍게 들어가 보세요.",
+  ];
+  if (directionId === "community_program" || directionId === "local_life_guide") {
+    out[1] = "이미 비슷한 모임을 운영하는 사람에게 운영 노하우를 물어보세요.";
+  }
+  if (a.format === "online" || a.format === "both") {
+    out.push(
+      "관심 분야의 사람에게 링크드인으로 짧은 콜드 메시지를 보내보세요. (답이 안 와도 괜찮아요)",
+    );
+  }
+  return out.slice(0, 2);
+}
+
+function toolsToTry(directionId: string): string[] {
+  const map: Record<string, string[]> = {
+    one_on_one_guide: ["일정 잡기 — Calendly(무료)", "메모·정리 — Notion"],
+    one_on_one_consulting: ["화상 상담 — Zoom / Google Meet", "정리·공유 — Notion"],
+    small_class: ["수업 — Zoom", "신청·결제 — Google Forms + 간편결제(토스·페이팔)"],
+    digital_guide: ["문서·가이드 — Notion / Google Docs", "보기 좋게 — Canva"],
+    ai_beginner_help: ["ChatGPT(함께 실습)", "결과 보여주기 — Canva·이미지 생성"],
+    community_program: ["모임 공지 — 카카오톡 오픈채팅", "참여·일정 — Google Forms"],
+    local_life_guide: ["정보 정리 — Notion 체크리스트", "안내 자료 — Canva"],
+    experience_support: ["대화 — Zoom / 전화", "기록·정리 — Notion"],
+  };
+  return map[directionId] ?? map.one_on_one_guide;
+}
+
 // ── Assemble ─────────────────────────────────────────────────
 export function buildReport(
   a: QuestionResponseMap,
@@ -257,6 +326,9 @@ export function buildReport(
     customerChannels: customerChannels(topId, a),
     firstAction: firstAction(topId),
     closing: buildClosing(a),
+    whatToLearn: whatToLearn(topId, a),
+    peopleToReach: peopleToReach(topId, a),
+    toolsToTry: toolsToTry(topId),
   };
 }
 
@@ -288,6 +360,13 @@ export function reportToText(
   L.push("");
   L.push("■ 이번 주 첫 행동");
   L.push(report.firstAction);
+  if (report.whatToLearn?.length || report.peopleToReach?.length || report.toolsToTry?.length) {
+    L.push("");
+    L.push("■ 다음으로 해볼 것들");
+    report.whatToLearn?.forEach((x) => L.push(`· [공부] ${x}`));
+    report.peopleToReach?.forEach((x) => L.push(`· [사람] ${x}`));
+    report.toolsToTry?.forEach((x) => L.push(`· [도구] ${x}`));
+  }
   L.push("");
   L.push("■ 마지막 한마디");
   L.push(report.closing);

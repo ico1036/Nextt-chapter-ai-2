@@ -58,6 +58,27 @@ export interface ReportSection {
   customerChannels: string[];
   firstAction: string;
   closing: string;
+  // ── "다음으로 해볼 것들" (optional; older sessions may lack these) ──
+  whatToLearn?: string[]; // 지금 공부하면 좋은 것
+  peopleToReach?: string[]; // 만나보면 좋은 사람 / 커피챗·콜드메시지·단체
+  toolsToTry?: string[]; // 써보면 좋은 AI·디지털 도구
+}
+
+// ── Compass seed + gentle gamification (derived from notes; not stored) ──
+export interface Progress {
+  clarity: number; // 방향 선명도 0~95 (%)
+  clarityGains: string[]; // 최근 선명도가 오른 이유 1~2개
+  xp: number;
+  level: number; // 1..n
+  levelName: string; // 씨앗 / 새싹 / 가지 / 꽃 …
+  levelEmoji: string;
+  xpIntoLevel: number; // 현재 레벨 안에서 쌓인 XP
+  xpForLevel: number; // 이 레벨을 채우는 데 필요한 XP
+  streak: number; // 이어가는 중인 날
+  streakOngoing: boolean;
+  returnCount: number; // 다시 돌아온 횟수 (무죄책)
+  lastGainXp?: number; // 직전 노트로 얻은 XP (완료 화면용)
+  lastGainClarity?: number; // 직전 노트로 오른 선명도 %
 }
 
 export interface DiagnosticSession {

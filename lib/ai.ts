@@ -34,6 +34,9 @@ interface WarmFields {
   summary?: string;
   strengths?: string[];
   closing?: string;
+  whatToLearn?: string[];
+  peopleToReach?: string[];
+  toolsToTry?: string[];
 }
 
 export async function warmUpReport(
@@ -43,16 +46,18 @@ export async function warmUpReport(
   if (!aiEnabled()) return report;
 
   const system = [
-    "당신은 미국에 사는 한인 이민자 엄마를 돕는 따뜻하고 현실적인 진단 코치입니다.",
-    "이미 만들어진 진단 리포트의 일부 문장을 더 자연스럽고 따뜻하게 다듬는 역할만 합니다.",
-    "규칙: 추천 방향/오퍼/채널/행동의 '내용'은 절대 바꾸지 마세요. 빈말·과장 칭찬 금지.",
-    "창업 용어 대신 생활 언어를 쓰고, 짧고 다정하게. 반드시 한국어.",
-    "출력은 JSON만: {\"summary\": string, \"strengths\": string[], \"closing\": string}",
+    "당신은 다시 시작하려는 사람(미국 한인 이민자 엄마·초기 창업자 등)을 돕는 따뜻하고 현실적인 진단 코치입니다.",
+    "이미 만들어진 진단 리포트의 일부를 더 자연스럽고 따뜻하게 다듬고, 일부 추천을 사용자에게 더 구체적으로 맞춥니다.",
+    "규칙: 추천 방향/오퍼/채널/첫 행동의 '내용'은 절대 바꾸지 마세요. 빈말·과장 칭찬 금지.",
+    "창업 용어보다 생활 언어를 쓰고, 짧고 다정하게. 반드시 한국어.",
+    "출력은 JSON만: {\"summary\": string, \"strengths\": string[], \"closing\": string, \"whatToLearn\": string[], \"peopleToReach\": string[], \"toolsToTry\": string[]}",
   ].join("\n");
 
   const user = [
-    "아래는 사용자의 답변 요약과 현재 리포트입니다.",
-    "summary, strengths(3~4개), closing 세 부분만 더 따뜻하게 다듬어 JSON으로 주세요.",
+    "아래는 사용자의 답변과 현재 리포트입니다.",
+    "summary·strengths(3~4개)·closing은 더 따뜻하게 다듬고,",
+    "whatToLearn(공부할 것 1~2개)·peopleToReach(만나볼 사람 1~2개)·toolsToTry(써볼 도구 2개)는",
+    "사용자의 실제 경험·답변을 반영해 더 구체적으로 다듬어 JSON으로 주세요. (방향/오퍼/채널은 그대로)",
     "",
     "[사용자 답변]",
     JSON.stringify(answers, null, 2),
@@ -88,6 +93,10 @@ export async function warmUpReport(
     if (!json) return report;
 
     const warm = json as WarmFields;
+    const arr = (v: unknown, fb?: string[]) =>
+      Array.isArray(v) && v.length
+        ? (v.filter((x) => typeof x === "string" && x.trim()) as string[])
+        : fb;
     return {
       ...report,
       summary: warm.summary?.trim() || report.summary,
@@ -96,6 +105,9 @@ export async function warmUpReport(
           ? warm.strengths.slice(0, 4)
           : report.strengths,
       closing: warm.closing?.trim() || report.closing,
+      whatToLearn: arr(warm.whatToLearn, report.whatToLearn)?.slice(0, 2),
+      peopleToReach: arr(warm.peopleToReach, report.peopleToReach)?.slice(0, 2),
+      toolsToTry: arr(warm.toolsToTry, report.toolsToTry)?.slice(0, 2),
     };
   } catch {
     return report;

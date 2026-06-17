@@ -227,10 +227,10 @@ export function runRecommendation(
 }
 
 export const USER_TYPE_LABEL: Record<UserType, string> = {
-  career_reboot: "다시 시작하는 엄마",
-  expert: "이미 자산이 있는 전문가 엄마",
-  ai_curious: "AI를 연결하고 싶은 엄마",
-  community_connector: "사람을 잇는 커넥터 엄마",
+  career_reboot: "다시 시작하는 사람",
+  expert: "이미 자산이 있는 전문가",
+  ai_curious: "AI를 연결하려는 사람",
+  community_connector: "사람을 잇는 커넥터",
 };
 
 export const ASSET_LABEL: Record<AssetType, string> = {

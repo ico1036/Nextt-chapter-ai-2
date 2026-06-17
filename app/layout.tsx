@@ -5,7 +5,7 @@ import AppTabBar from "./components/AppTabBar";
 export const metadata: Metadata = {
   title: "My Next Chapter AI — 내가 다시 시작할 수 있는 일의 방향 찾기",
   description:
-    "미국 한인 이민자 엄마를 위한 AI 진단. 15분이면, 내 경험으로 다시 시작할 수 있는 일의 방향 하나가 선명해져요.",
+    "다시 시작하려는 사람을 위한 AI 진단. 초기·예비 창업자, 이민자 엄마 누구든 15분이면, 내 경험으로 시작할 수 있는 일의 방향 하나가 선명해져요.",
   openGraph: {
     title: "My Next Chapter AI",
     description:

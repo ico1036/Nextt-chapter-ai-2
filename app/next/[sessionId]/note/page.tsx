@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Wordmark } from "../../../components/Logo";
 import { NOTE_STEPS, MOOD_OPTIONS } from "@/lib/note";
 import { track } from "@/lib/track";
-import type { MoodTag, NoteReflection } from "@/lib/types";
+import type { MoodTag, NoteReflection, Progress } from "@/lib/types";
 
 type Values = {
   todayAction: string;
@@ -54,6 +54,7 @@ function NoteFlow({ sessionId }: { sessionId: string }) {
     nextStep: "",
   });
   const [reflection, setReflection] = useState<NoteReflection | null>(null);
+  const [noteProgress, setNoteProgress] = useState<Progress | null>(null);
 
   useEffect(() => {
     track("note_intro_viewed", undefined, sessionId);
@@ -87,6 +88,7 @@ function NoteFlow({ sessionId }: { sessionId: string }) {
       const data = await res.json();
       track("note_created", undefined, sessionId);
       setReflection(data.note?.reflection ?? null);
+      setNoteProgress(data.progress ?? null);
       setPhase("done");
     } catch {
       alert("기록을 저장하는 중 문제가 있었어요. 다시 시도해 주세요.");
@@ -160,6 +162,25 @@ function NoteFlow({ sessionId }: { sessionId: string }) {
           <p className="mt-3 leading-relaxed text-ink-soft">
             완벽하지 않아도 괜찮아요. 멈추지 않고 흔적을 남긴 게 중요해요.
           </p>
+
+          {noteProgress && (
+            <div className="mt-6 flex flex-wrap items-center gap-2">
+              {noteProgress.lastGainClarity && noteProgress.lastGainClarity > 0 ? (
+                <span className="rounded-full bg-clay-tint px-3 py-1.5 text-sm font-medium text-clay-deep">
+                  방향이 +{noteProgress.lastGainClarity}% 선명해졌어요 · 지금 {noteProgress.clarity}%
+                </span>
+              ) : (
+                <span className="rounded-full bg-clay-tint px-3 py-1.5 text-sm font-medium text-clay-deep">
+                  방향 선명도 {noteProgress.clarity}%
+                </span>
+              )}
+              {noteProgress.lastGainXp ? (
+                <span className="rounded-full bg-sage-tint px-3 py-1.5 text-sm font-medium text-sage">
+                  +{noteProgress.lastGainXp} XP · {noteProgress.levelEmoji} {noteProgress.levelName}
+                </span>
+              ) : null}
+            </div>
+          )}
 
           {reflection && (
             <div className="mt-7 rounded-3xl border border-sage/40 bg-sage-tint/60 p-6">

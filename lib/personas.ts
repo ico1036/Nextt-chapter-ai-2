@@ -151,6 +151,31 @@ export const PERSONAS: Persona[] = [
       biggest_blocker: "no_time",
     },
   },
+  {
+    id: "aspiring_youth",
+    name: "도현",
+    emoji: "🚀",
+    type: "미국 창업을 꿈꾸는 청년",
+    summary: "한국 청년, 사이드 프로젝트 경험. 뭘 할지 막막하지만 열망은 큼",
+    answers: {
+      current_thought: "dont_know",
+      current_state: "vague_ideas",
+      korea_experience:
+        "한국에서 대학 다니면서 작은 사이드 프로젝트를 몇 개 만들어봤어요. 코딩도 조금 해요.",
+      us_experience:
+        "미국에 와서 창업 모임이나 해커톤에 기웃거리며 사람들을 만나고 있어요.",
+      often_asked: "AI 툴 어떻게 쓰는지, 사이드 프로젝트 어떻게 시작하는지 물어봐요.",
+      good_at_unpaid: "새로운 걸 빨리 배워서 일단 만들어보는 거요.",
+      work_style: "make_alone",
+      energy_giving: "내가 만든 걸 누군가 실제로 써줄 때요.",
+      dont_want: "반복적인 사무 작업이요.",
+      time_available: "about_2h",
+      format: "online",
+      want_most: "grow_my_work",
+      direction_interest: "digital",
+      biggest_blocker: "would_anyone_pay",
+    },
+  },
 ];
 
 export const PERSONA_BY_ID: Record<string, Persona> = Object.fromEntries(

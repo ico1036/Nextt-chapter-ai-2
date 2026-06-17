@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getSession, listNotes } from "@/lib/store";
 import { deriveTodayAction } from "@/lib/note";
 import { computeMomentum, momentumCopy } from "@/lib/momentum";
+import { computeProgress } from "@/lib/progress";
 import { buildTimeline } from "@/lib/timeline";
 import { Wordmark } from "../../components/Logo";
 import TrackView from "../../components/TrackView";
@@ -29,6 +30,8 @@ export default async function HomeDashboard({
   const { action } = deriveTodayAction(session.report?.firstAction, notes);
   const m = computeMomentum(notes);
   const copy = momentumCopy(m);
+  const p = computeProgress(session, notes);
+  const report = session.report;
   const lastNote = notes.length ? notes[notes.length - 1] : undefined;
   const timeline = buildTimeline(session, notes);
   const latestEvent = timeline.length ? timeline[timeline.length - 1] : undefined;
@@ -101,34 +104,99 @@ export default async function HomeDashboard({
           </div>
         </div>
 
-        {/* 3. Momentum summary */}
+        {/* 2.5 이런 것도 해보면 좋아요 (공부·사람·도구) */}
+        {(report?.whatToLearn?.length ||
+          report?.peopleToReach?.length ||
+          report?.toolsToTry?.length) && (
+          <Link
+            href={`/result/${sessionId}`}
+            className="block rounded-3xl border border-line bg-surface p-6 shadow-sm transition hover:shadow-soft"
+          >
+            <p className="text-xs font-semibold uppercase tracking-wide text-clay">
+              이런 것도 해보면 좋아요
+            </p>
+            <div className="mt-3 space-y-2 text-sm text-ink">
+              {report?.whatToLearn?.[0] && (
+                <p>📚 {report.whatToLearn[0]}</p>
+              )}
+              {report?.peopleToReach?.[0] && (
+                <p>🤝 {report.peopleToReach[0]}</p>
+              )}
+              {report?.toolsToTry?.[0] && <p>🛠 {report.toolsToTry[0]}</p>}
+            </div>
+            <p className="mt-3 text-sm text-clay">리포트에서 더 보기 →</p>
+          </Link>
+        )}
+
+        {/* 3. 방향 선명도 (컴퍼스) + 레벨·XP·스트릭 */}
         <div className="rounded-3xl border border-line bg-surface p-6 shadow-sm">
-          <p className="font-display text-lg font-bold text-ink">
-            {copy.headline}
-          </p>
-          <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
-            {copy.subcopy}
-          </p>
+          {/* 방향 선명도 */}
+          <div className="flex items-end justify-between">
+            <p className="font-display text-lg font-bold text-ink">
+              방향이 {p.clarity}% 선명해졌어요
+            </p>
+            <span className="text-2xl font-bold text-clay">{p.clarity}%</span>
+          </div>
+          <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-sand">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-gold to-clay transition-all duration-700"
+              style={{ width: `${Math.max(6, p.clarity)}%` }}
+            />
+          </div>
+          {p.clarityGains[0] && (
+            <p className="mt-2 text-sm text-ink-soft">{p.clarityGains[0]}</p>
+          )}
+
+          {/* 레벨 + XP */}
+          <div className="mt-5 flex items-center gap-3 rounded-2xl bg-cream-2 px-4 py-3">
+            <span className="text-2xl">{p.levelEmoji}</span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-baseline justify-between">
+                <span className="text-sm font-semibold text-ink">
+                  {p.levelName}
+                </span>
+                <span className="text-xs text-ink-faint">
+                  {p.xpIntoLevel}/{p.xpForLevel} XP
+                </span>
+              </div>
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-sand">
+                <div
+                  className="h-full rounded-full bg-sage transition-all duration-700"
+                  style={{
+                    width: `${Math.min(100, Math.round((p.xpIntoLevel / p.xpForLevel) * 100))}%`,
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 7일 흐름 + 무죄책 스트릭 */}
           <div className="mt-5">
             <MomentumDots last7={m.last7} />
           </div>
-          {(m.returnCount > 0 || m.activeDaysLast30 > 0) && (
-            <div className="mt-5 flex flex-wrap gap-2 text-xs">
-              {m.activeDaysLast30 > 0 && (
-                <span className="rounded-full bg-sage-tint px-3 py-1 text-sage">
-                  최근 30일 중 {m.activeDaysLast30}일 연결
-                </span>
-              )}
-              {m.returnCount > 0 && (
-                <span className="rounded-full bg-clay-tint px-3 py-1 text-clay-deep">
-                  다시 돌아온 힘 {m.returnCount}번
-                </span>
-              )}
-            </div>
-          )}
+          <div className="mt-4 flex flex-wrap gap-2 text-xs">
+            {p.streakOngoing && p.streak >= 1 && (
+              <span className="rounded-full bg-clay-tint px-3 py-1 text-clay-deep">
+                {p.streak}일째 이어가는 중
+              </span>
+            )}
+            {p.returnCount > 0 && (
+              <span className="rounded-full bg-sage-tint px-3 py-1 text-sage">
+                다시 돌아온 힘 {p.returnCount}번
+              </span>
+            )}
+            {m.activeDaysLast30 > 0 && (
+              <span className="rounded-full bg-cream-2 px-3 py-1 text-ink-soft">
+                최근 30일 중 {m.activeDaysLast30}일 연결
+              </span>
+            )}
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+            {copy.subcopy}
+          </p>
           <Link
             href={`/next/${sessionId}/calendar`}
-            className="mt-5 inline-block text-sm font-medium text-clay"
+            className="mt-4 inline-block text-sm font-medium text-clay"
           >
             내 흐름 보기 →
           </Link>

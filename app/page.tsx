@@ -6,28 +6,28 @@ import ReturningBanner from "./components/ReturningBanner";
 const painPoints = [
   "나는 도대체 무슨 일로 다시 돈을 벌 수 있지?",
   "내 경험이… 정말 가치가 있는 걸까?",
-  "집이랑 육아랑 같이 할 수 있는 일이 있을까?",
+  "지금 내 상황에서 작게 시작할 수 있는 일이 있을까?",
   "AI는 배웠는데, 이걸 내 일이랑 어떻게 연결하지?",
 ];
 
 const userTypes = [
   {
-    tag: "다시 시작하는 엄마",
-    desc: "육아·이민·경력 단절 이후, 다시 내 일을 찾고 싶은 분",
+    tag: "다시 시작하는 사람",
+    desc: "경력 단절·이민·졸업 이후, 다시 내 일을 찾고 싶은 분 (엄마·청년 누구든)",
     tint: "bg-clay-tint",
   },
   {
-    tag: "이미 자산이 있는 엄마",
-    desc: "교육·상담·부동산·뷰티 등 경험은 있는데 어떻게 팔지 막힌 분",
+    tag: "이미 자산이 있는 전문가",
+    desc: "교육·상담·뷰티·개발 등 경험은 있는데 어떻게 팔지 막힌 분",
     tint: "bg-sage-tint",
   },
   {
-    tag: "AI가 궁금한 엄마",
-    desc: "AI는 배웠거나 관심 있는데, 수익과 연결을 못 한 분",
+    tag: "AI를 연결하려는 사람",
+    desc: "AI는 배웠거나 관심 있는데, 내 일·수익과 연결을 못 한 분",
     tint: "bg-clay-tint",
   },
   {
-    tag: "사람을 잇는 엄마",
+    tag: "사람을 잇는 커넥터",
     desc: "모임·소개·연결에 강점이 있는, 관계 자산이 큰 분",
     tint: "bg-sage-tint",
   },
@@ -75,7 +75,7 @@ export default function LandingPage() {
           </div>
           <p className="animate-fade-up mb-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface/80 px-4 py-1.5 text-sm text-ink-soft shadow-sm backdrop-blur">
             <span className="h-1.5 w-1.5 rounded-full bg-sage" />
-            미국 한인 이민자 엄마를 위한 AI 진단
+            다시 시작하려는 사람을 위한 AI 진단
           </p>
 
           <h1 className="animate-fade-up delay-1 font-display text-[2.1rem] font-bold leading-[1.32] text-ink sm:text-[3.1rem] sm:leading-[1.3]">
@@ -211,7 +211,8 @@ export default function LandingPage() {
               누구를 위한 서비스인가요
             </h2>
             <p className="mt-3 text-ink-soft">
-              35~55세, 한국어가 편한, 미국에 사는 엄마들을 위해 만들었어요.
+              뭘 모르지만 열망은 큰, 시간 없고 외로운 초기·예비 창업자를 위해
+              만들었어요. 미국 한인 엄마·청년·시니어 누구든요.
             </p>
           </div>
           <div className="mt-12 grid gap-5 sm:grid-cols-2">

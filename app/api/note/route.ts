@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { addNote, getSession, listNotes, logEvent } from "@/lib/store";
 import { reflectNoteAI } from "@/lib/ai";
+import { computeProgress } from "@/lib/progress";
 import { todayDateString } from "@/lib/note";
 import type { DailyNote, MoodTag } from "@/lib/types";
 
@@ -60,13 +61,17 @@ export async function POST(req: Request) {
 
   await addNote(sessionId, note);
 
+  // Compass + gamification snapshot after this note (for the celebration).
+  const notes = await listNotes(sessionId);
+  const progress = computeProgress(session, notes);
+
   await logEvent({
     id: `e_${Date.now()}_${Math.round(Math.random() * 1e6)}`,
     sessionId,
     type: "note_created",
-    meta: { moodTag, hasAction: Boolean(note.todayAction) },
+    meta: { moodTag, hasAction: Boolean(note.todayAction), clarity: progress.clarity },
     at: now.toISOString(),
   });
 
-  return NextResponse.json({ note });
+  return NextResponse.json({ note, progress });
 }

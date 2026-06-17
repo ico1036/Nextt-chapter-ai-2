@@ -193,6 +193,31 @@ export default async function ResultPage({
           </div>
         </Section>
 
+        {/* 다음으로 해볼 것들 — 공부 · 사람 · 도구 */}
+        {(r.whatToLearn?.length ||
+          r.peopleToReach?.length ||
+          r.toolsToTry?.length) && (
+          <Section index="07" title="다음으로 해볼 것들">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <NextThing
+                emoji="📚"
+                title="지금 공부하면 좋은 것"
+                items={r.whatToLearn}
+              />
+              <NextThing
+                emoji="🤝"
+                title="만나보면 좋은 사람"
+                items={r.peopleToReach}
+              />
+              <NextThing
+                emoji="🛠"
+                title="써보면 좋은 도구"
+                items={r.toolsToTry}
+              />
+            </div>
+          </Section>
+        )}
+
         {/* 마지막 한마디 */}
         <div className="rounded-3xl bg-ink px-8 py-10 text-center">
           <p className="font-display text-xl font-bold leading-relaxed text-cream sm:text-2xl">
@@ -273,5 +298,32 @@ function Section({
       </div>
       {children}
     </section>
+  );
+}
+
+function NextThing({
+  emoji,
+  title,
+  items,
+}: {
+  emoji: string;
+  title: string;
+  items?: string[];
+}) {
+  if (!items?.length) return null;
+  return (
+    <div className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
+      <p className="flex items-center gap-2 font-display text-base font-bold text-ink">
+        <span>{emoji}</span>
+        {title}
+      </p>
+      <ul className="mt-3 space-y-2">
+        {items.map((it, i) => (
+          <li key={i} className="text-sm leading-relaxed text-ink-soft">
+            {it}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
