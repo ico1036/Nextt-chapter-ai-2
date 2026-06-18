@@ -128,8 +128,13 @@ for (const scenario of scenarios) {
 
     assert.match(text, /지금의 당신/);
     assert.match(text, /첫 오퍼 초안/);
+    assert.match(text, /시장 체크/);
     assert.match(text, /이번 주 첫 행동/);
     assert.ok(report.offerDraft.length > 30, "offer should be concrete enough to show to someone");
+    assert.ok(report.marketCheck, "offer should be paired with a market validation layer");
+    assert.ok(report.marketCheck.validationQuestion.includes("?") || report.marketCheck.validationQuestion.includes("까요"));
+    assert.ok(report.marketCheck.firstExperiment.includes("3명"));
+    assert.ok(report.marketCheck.sources.some((s) => s.kind === "public_search" && s.url));
     assert.ok(report.customerChannels.length >= 2, "user needs places to find first customers");
     assert.ok(today.source === "yesterday", "after note creation, next action should continue from yesterday");
 
@@ -143,7 +148,7 @@ for (const scenario of scenarios) {
     assert.ok(timeline.some((e) => e.type === "customer_voice_captured"));
 
     assert.doesNotMatch(
-      `${report.offerDraft}\n${compass.oneLine}\n${lens.perspective}`,
+      `${report.offerDraft}\n${report.marketCheck?.coaching}\n${compass.oneLine}\n${lens.perspective}`,
       /무조건|반드시 성공|확실히 팔|보장/,
       "integration copy must not overclaim success",
     );

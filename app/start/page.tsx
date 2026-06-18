@@ -7,6 +7,7 @@ import { LogoMark, Wordmark } from "../components/Logo";
 import { track, detectDevice } from "@/lib/track";
 import { saveLocalSession } from "@/lib/session-client";
 import { PERSONAS, TEST_TOOLS_ENABLED } from "@/lib/personas";
+import { extractContextSignals, type ContextSignalPreview } from "@/lib/context-signals";
 
 const reassurances = [
   { icon: "🌿", t: "시험이 아니에요", d: "정답을 맞히는 게 아니라, 가능성을 찾는 시간이에요." },
@@ -17,6 +18,8 @@ const reassurances = [
 export default function StartPage() {
   const router = useRouter();
   const [name, setName] = useState("");
+  const [contextText, setContextText] = useState("");
+  const [signalPreview, setSignalPreview] = useState<ContextSignalPreview | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -72,6 +75,50 @@ export default function StartPage() {
     } catch {
       setLoading(false);
       alert("연결에 문제가 있었어요. 잠시 후 다시 시도해 주세요.");
+    }
+  }
+
+  async function runContextFirst() {
+    if (loading) return;
+    const input = contextText.trim();
+    if (input.length < 40) {
+      alert("기존 자료를 조금만 더 붙여넣어 주세요. 최소 2~3문장이 좋아요.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const extraction = extractContextSignals(input);
+      setSignalPreview(extraction.preview);
+      const res = await fetch("/api/session", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          device: detectDevice(),
+          name: name.trim() || "자료 기반 진단",
+        }),
+      });
+      const { sessionId } = await res.json();
+      const c = await fetch("/api/complete", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          sessionId,
+          name: name.trim() || "자료 기반 진단",
+          answers: extraction.answers,
+        }),
+      });
+      const data = await c.json().catch(() => null);
+      track("context_first_completed", { signals: extraction.preview.assetSignals }, sessionId);
+      saveLocalSession(
+        sessionId,
+        name.trim() || "자료 기반 진단",
+        data?.recommendation?.topDirection?.label,
+      );
+      setContextText("");
+      router.push(`/result/${sessionId}`);
+    } catch {
+      setLoading(false);
+      alert("자료를 신호로 바꾸는 중 문제가 있었어요. 다시 시도해 주세요.");
     }
   }
 
@@ -148,6 +195,42 @@ export default function StartPage() {
             <span>🔒</span>
             당신이 적은 이야기는 방향을 찾는 데만 쓰여요. 회사에 파는 일은 없어요.
           </p>
+
+          <div className="mt-7 rounded-2xl border border-sage/30 bg-sage-tint/40 p-4">
+            <p className="text-sm font-semibold text-sage">
+              기존 자료로 바로 보기
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-ink-soft">
+              일기, 메모, 블로그 초안, 노션 글을 붙여넣으면 원문은 저장하지 않고
+              방향성 신호만 추출해 결과를 만들어요.
+            </p>
+            <textarea
+              value={contextText}
+              onChange={(e) => {
+                const next = e.target.value;
+                setContextText(next);
+                setSignalPreview(
+                  next.trim().length >= 40 ? extractContextSignals(next).preview : null,
+                );
+              }}
+              placeholder="예) 요즘 사람들이 AI를 어떻게 업무에 쓰는지 자주 물어봐요. 저는 마케팅 일을 했고, 챗GPT로 안내문이나 반복 업무를 줄이는 걸 도와준 적이 있어요..."
+              className="mt-3 min-h-28 w-full resize-none rounded-2xl border border-line bg-surface px-4 py-3 text-sm leading-relaxed text-ink outline-none transition placeholder:text-ink-faint focus:border-sage"
+            />
+            {signalPreview && (
+              <div className="mt-3 rounded-xl bg-surface px-3 py-2 text-xs text-ink-soft">
+                <p className="font-semibold text-ink">추출될 신호</p>
+                <p className="mt-1">{signalPreview.assetSignals.join(" · ")}</p>
+                <p className="mt-1">{signalPreview.privacyNotice}</p>
+              </div>
+            )}
+            <button
+              onClick={runContextFirst}
+              disabled={loading}
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-sage px-5 py-3 text-sm font-semibold text-white shadow-soft transition hover:brightness-95 active:scale-[0.99] disabled:opacity-60"
+            >
+              {loading ? "신호를 추출하고 있어요…" : "원문 저장 없이 결과 보기 →"}
+            </button>
+          </div>
 
           {TEST_TOOLS_ENABLED && (
             <div className="mt-7 rounded-2xl border border-dashed border-clay/30 bg-clay-tint/30 p-4">

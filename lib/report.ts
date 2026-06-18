@@ -6,6 +6,7 @@
 
 import { DIRECTION_BY_ID } from "./directions";
 import { ASSET_LABEL } from "./engine";
+import { buildMarketCheck } from "./market-check";
 import { optionLabel } from "./questions";
 import type {
   QuestionResponseMap,
@@ -323,6 +324,7 @@ export function buildReport(
       reasons: topReasons(rec),
     },
     offerDraft: offerDraft(topId, a),
+    marketCheck: buildMarketCheck(a, rec),
     customerChannels: customerChannels(topId, a),
     firstAction: firstAction(topId),
     closing: buildClosing(a),
@@ -354,6 +356,16 @@ export function reportToText(
   L.push("");
   L.push("■ 첫 오퍼 초안");
   L.push(report.offerDraft);
+  if (report.marketCheck) {
+    L.push("");
+    L.push("■ 시장 체크");
+    L.push(`검증 점수: ${report.marketCheck.score}/100`);
+    L.push(report.marketCheck.coaching);
+    report.marketCheck.demandSignals.forEach((x) => L.push(`· 수요 신호: ${x}`));
+    report.marketCheck.riskSignals.forEach((x) => L.push(`· 확인할 리스크: ${x}`));
+    L.push(`검증 질문: ${report.marketCheck.validationQuestion}`);
+    L.push(`첫 실험: ${report.marketCheck.firstExperiment}`);
+  }
   L.push("");
   L.push("■ 첫 손님은 어디에");
   report.customerChannels.forEach((c) => L.push(`· ${c}`));

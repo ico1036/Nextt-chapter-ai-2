@@ -55,6 +55,21 @@ export interface ReportSection {
   directions: { label: string; why: string }[];
   topRecommendation: { label: string; reasons: string[] };
   offerDraft: string;
+  marketCheck?: {
+    verdict: "ready_to_test" | "needs_narrowing" | "needs_evidence";
+    score: number;
+    demandSignals: string[];
+    riskSignals: string[];
+    coaching: string;
+    validationQuestion: string;
+    firstExperiment: string;
+    sources: {
+      label: string;
+      kind: "mock" | "public_search";
+      url?: string;
+      why: string;
+    }[];
+  };
   customerChannels: string[];
   firstAction: string;
   closing: string;

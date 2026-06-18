@@ -172,8 +172,82 @@ export default async function ResultPage({
           </div>
         </Section>
 
+        {/* Market Check */}
+        {r.marketCheck && (
+          <Section index="05" title="시장 코칭">
+            <div className="rounded-3xl border border-gold/50 bg-surface p-6 shadow-sm">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-ink-soft">
+                    오퍼를 실제 사람에게 보여주기 전 확인할 것
+                  </p>
+                  <p className="mt-2 font-display text-xl font-bold leading-snug text-ink">
+                    {r.marketCheck.coaching}
+                  </p>
+                </div>
+                <div className="shrink-0 rounded-2xl border border-line bg-cream px-4 py-3 text-center">
+                  <p className="text-xs font-semibold text-ink-soft">검증 점수</p>
+                  <p className="font-display text-2xl font-bold text-clay">
+                    {r.marketCheck.score}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <SignalList
+                  title="수요 신호"
+                  tone="demand"
+                  items={r.marketCheck.demandSignals}
+                />
+                <SignalList
+                  title="확인할 리스크"
+                  tone="risk"
+                  items={r.marketCheck.riskSignals}
+                />
+              </div>
+
+              <div className="mt-5 rounded-2xl bg-cream-2 p-5">
+                <p className="text-xs font-semibold uppercase tracking-wider text-clay-deep">
+                  검증 질문
+                </p>
+                <p className="mt-2 font-medium leading-relaxed text-ink">
+                  {r.marketCheck.validationQuestion}
+                </p>
+                <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-clay-deep">
+                  첫 실험
+                </p>
+                <p className="mt-2 leading-relaxed text-ink-soft">
+                  {r.marketCheck.firstExperiment}
+                </p>
+              </div>
+
+              <div className="mt-5 space-y-2">
+                {r.marketCheck.sources.map((source) => (
+                  <div
+                    key={source.label}
+                    className="rounded-2xl border border-line bg-cream/60 px-4 py-3 text-sm text-ink-soft"
+                  >
+                    <p className="font-semibold text-ink">{source.label}</p>
+                    <p className="mt-1 leading-relaxed">{source.why}</p>
+                    {source.url && (
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-2 inline-block text-clay underline"
+                      >
+                        공개 검색으로 확인하기
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Section>
+        )}
+
         {/* 첫 고객 채널 */}
-        <Section index="05" title="첫 손님은 어디에 있을까요">
+        <Section index="06" title="첫 손님은 어디에 있을까요">
           <ul className="space-y-3">
             {r.customerChannels.map((c, i) => (
               <li
@@ -188,7 +262,7 @@ export default async function ResultPage({
         </Section>
 
         {/* 이번 주 첫 행동 */}
-        <Section index="06" title="이번 주, 가장 작은 첫 행동">
+        <Section index="07" title="이번 주, 가장 작은 첫 행동">
           <div className="rounded-3xl border border-sage/40 bg-sage-tint p-7">
             <p className="text-lg font-medium leading-relaxed text-ink">
               {r.firstAction}
@@ -200,7 +274,7 @@ export default async function ResultPage({
         {(r.whatToLearn?.length ||
           r.peopleToReach?.length ||
           r.toolsToTry?.length) && (
-          <Section index="07" title="다음으로 해볼 것들">
+          <Section index="08" title="다음으로 해볼 것들">
             <div className="grid gap-4 sm:grid-cols-3">
               <NextThing
                 emoji="📚"
@@ -222,7 +296,7 @@ export default async function ResultPage({
         )}
 
         {/* 전문가 렌즈 — 막힘을 뚫는 관점 */}
-        <Section index="08" title="전문가 렌즈">
+        <Section index="09" title="전문가 렌즈">
           <ExpertLensCard lens={lens} sessionId={sessionId} />
         </Section>
 
@@ -306,6 +380,36 @@ function Section({
       </div>
       {children}
     </section>
+  );
+}
+
+function SignalList({
+  title,
+  tone,
+  items,
+}: {
+  title: string;
+  tone: "demand" | "risk";
+  items: string[];
+}) {
+  return (
+    <div
+      className={`rounded-2xl border p-5 ${
+        tone === "demand"
+          ? "border-sage/40 bg-sage-tint"
+          : "border-clay/30 bg-clay-tint"
+      }`}
+    >
+      <p className="font-display text-base font-bold text-ink">{title}</p>
+      <ul className="mt-3 space-y-2">
+        {items.map((item, i) => (
+          <li key={i} className="flex gap-2 text-sm leading-relaxed text-ink-soft">
+            <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-clay" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

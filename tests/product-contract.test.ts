@@ -4,12 +4,14 @@ import assert from "node:assert/strict";
 import { PERSONA_BY_ID, PERSONAS } from "../lib/personas.ts";
 import { classifyAssets, classifyUserTypes, runRecommendation } from "../lib/engine.ts";
 import { buildReport, reportToText } from "../lib/report.ts";
+import { buildMarketCheck } from "../lib/market-check.ts";
 import { buildCompass, buildRoadmap, todaysPick } from "../lib/compass-summary.ts";
 import { buildExpertLens } from "../lib/expert-lens.ts";
 import { computeMomentum, momentumCopy } from "../lib/momentum.ts";
 import { computeProgress } from "../lib/progress.ts";
 import { buildTimeline } from "../lib/timeline.ts";
 import { deriveTodayAction, microActionAt } from "../lib/note.ts";
+import { extractContextSignals } from "../lib/context-signals.ts";
 import type { DailyNote, DiagnosticSession, QuestionResponseMap } from "../lib/types.ts";
 
 function completedSession(id: string, answers: QuestionResponseMap): DiagnosticSession {
@@ -70,6 +72,16 @@ test("product contract: every sample persona completes the core journey from ans
     assertNonEmpty(`${persona.id}: top recommendation label`, report.topRecommendation.label);
     assert.ok(report.topRecommendation.reasons.length >= 1, `${persona.id}: top recommendation needs reasons`);
     assertNonEmpty(`${persona.id}: offer draft`, report.offerDraft);
+    assert.ok(report.marketCheck, `${persona.id}: market check should exist below the offer`);
+    assert.ok(report.marketCheck.score >= 20 && report.marketCheck.score <= 88, `${persona.id}: market score stays bounded`);
+    assert.ok(report.marketCheck.demandSignals.length >= 1, `${persona.id}: demand signals should exist`);
+    assert.ok(report.marketCheck.riskSignals.length >= 1, `${persona.id}: risk signals should exist`);
+    assertNonEmpty(`${persona.id}: validation question`, report.marketCheck.validationQuestion);
+    assertNonEmpty(`${persona.id}: first experiment`, report.marketCheck.firstExperiment);
+    assert.ok(
+      report.marketCheck.sources.some((s) => s.kind === "public_search" && s.url?.startsWith("https://www.google.com/search?")),
+      `${persona.id}: market check needs one real public source path`,
+    );
     assertNonEmpty(`${persona.id}: first action`, report.firstAction);
     assert.ok(report.customerChannels.length >= 2, `${persona.id}: first customer channels must be concrete`);
     assert.ok(report.whatToLearn?.length, `${persona.id}: next learning suggestions should exist`);
@@ -104,10 +116,48 @@ test("report contract: copy must remain coaching-first and action-oriented", () 
   assert.match(text, /지금의 당신/);
   assert.match(text, /당신의 강점/);
   assert.match(text, /첫 오퍼 초안/);
+  assert.match(text, /시장 체크/);
   assert.match(text, /이번 주 첫 행동/);
   assert.doesNotMatch(text, /반드시 성공|무조건|확실히 팔/,
     "product should not make deterministic market/success claims");
   assert.ok(report.firstAction.includes("이번 주"), "first action should be immediately testable, not a vague plan");
+});
+
+test("market check contract: validation layer is source-aware and avoids success guarantees", () => {
+  for (const persona of PERSONAS.slice(0, 3)) {
+    const rec = runRecommendation(persona.answers);
+    const market = buildMarketCheck(persona.answers, rec);
+    const copy = [
+      market.coaching,
+      market.validationQuestion,
+      market.firstExperiment,
+      ...market.demandSignals,
+      ...market.riskSignals,
+    ].join("\n");
+
+    assert.ok(["ready_to_test", "needs_narrowing", "needs_evidence"].includes(market.verdict));
+    assert.ok(market.sources.some((s) => s.kind === "mock"));
+    assert.ok(market.sources.some((s) => s.kind === "public_search" && s.url));
+    assert.doesNotMatch(copy, /반드시 성공|무조건|확실히 팔|보장|성공 확률/);
+  }
+});
+
+test("context-first input contract: pasted raw text becomes generic signals, not stored excerpts", () => {
+  const raw =
+    "요즘 주변 엄마들이 챗GPT와 캔바를 어떻게 써야 하는지 자주 물어봐요. 저는 마케팅 일을 했고 AI로 안내문과 반복 업무를 줄이는 걸 도와준 적이 있어요. 다만 이걸 유료로 팔 수 있을지는 아직 모르겠어요.";
+  const extraction = extractContextSignals(raw);
+  const stored = Object.values(extraction.answers).join("\n");
+
+  assert.ok(extraction.preview.assetSignals.includes("AI·디지털 연결 신호"));
+  assert.equal(extraction.answers.current_thought, "connect_ai");
+  assert.equal(extraction.answers.biggest_blocker, "would_anyone_pay");
+  assert.doesNotMatch(stored, /주변 엄마들이 챗GPT와 캔바를 어떻게 써야 하는지/);
+  assert.match(extraction.preview.privacyNotice, /원문은 서버에 저장하지 않고/);
+
+  const rec = runRecommendation(extraction.answers);
+  const report = buildReport(extraction.answers, rec);
+  assertNonEmpty("context-first offer draft", report.offerDraft);
+  assert.ok(report.marketCheck?.validationQuestion);
 });
 
 test("compass contract: enough context yields direction, confidence, offer readiness, and next questions without overwriting the report", () => {
